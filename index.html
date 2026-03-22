@@ -13,6 +13,8 @@
         --text: #e9efff;
         --muted: #9fb0e3;
         --accent: #5eead4;
+        --warn: #fbbf24;
+        --danger: #f87171;
       }
       * { box-sizing: border-box; }
       body {
@@ -27,14 +29,35 @@
         margin: 32px auto;
         padding: 0 16px 32px;
       }
+      .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
       h1 {
         margin: 0 0 8px;
         font-size: 28px;
         letter-spacing: 0.02em;
       }
       .subtitle {
-        margin: 0 0 22px;
+        margin: 0;
         color: var(--muted);
+      }
+      .meta {
+        text-align: right;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .status-pill {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #33457a;
+        background: rgba(94,234,212,.15);
+        color: var(--accent);
       }
       .grid {
         display: grid;
@@ -80,6 +103,11 @@
           rgba(255,255,255,.09) 16px
         );
       }
+      .small {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
       footer {
         margin-top: 18px;
         color: var(--muted);
@@ -87,51 +115,146 @@
       }
       @media (max-width: 880px) {
         .grid { grid-template-columns: 1fr; }
+        .head { flex-direction: column; align-items: flex-start; }
+        .meta { text-align: left; }
       }
     </style>
   </head>
   <body>
     <main class="container">
-      <h1>Dummy Agent Dashboard</h1>
-      <p class="subtitle">Cloudflare Pages compatible static site (6 metric blocks).</p>
+      <div class="head">
+        <div>
+          <h1>Dummy Agent Dashboard</h1>
+          <p class="subtitle">Live metrics with auto-refresh (Cloudflare Pages compatible).</p>
+        </div>
+        <div class="meta">
+          <div>Last update: <span id="lastUpdated">--</span></div>
+          <div class="status-pill" id="statusPill">Connecting…</div>
+        </div>
+      </div>
 
       <section class="grid" aria-label="Top row metrics">
         <article class="card">
           <p class="label">Total Tasks Completed</p>
-          <p class="value">128</p>
-          <div class="graphic" role="img" aria-label="Dummy chart for total tasks completed"></div>
+          <p class="value" id="totalTasksCompleted">--</p>
+          <div class="graphic" role="img" aria-label="chart for total tasks completed"></div>
+          <div class="small">Cumulative completed work</div>
         </article>
         <article class="card">
           <p class="label">Active Agents</p>
-          <p class="value">4</p>
-          <div class="graphic" role="img" aria-label="Dummy chart for active agents"></div>
+          <p class="value" id="activeAgents">--</p>
+          <div class="graphic" role="img" aria-label="chart for active agents"></div>
+          <div class="small">Agents currently executing tasks</div>
         </article>
         <article class="card">
           <p class="label">Tokens Used</p>
-          <p class="value">72K</p>
-          <div class="graphic" role="img" aria-label="Dummy chart for tokens used"></div>
+          <p class="value" id="tokensUsed">--</p>
+          <div class="graphic" role="img" aria-label="chart for tokens used"></div>
+          <div class="small">Current period usage</div>
         </article>
       </section>
 
       <section class="grid" aria-label="Bottom row metrics" style="margin-top:14px">
         <article class="card">
           <p class="label">Tokens Left</p>
-          <p class="value">428K</p>
-          <div class="graphic" role="img" aria-label="Dummy chart for tokens left"></div>
+          <p class="value" id="tokensLeft">--</p>
+          <div class="graphic" role="img" aria-label="chart for tokens left"></div>
+          <div class="small">Remaining budget/capacity</div>
         </article>
         <article class="card">
           <p class="label">Today Completed</p>
-          <p class="value">26</p>
-          <div class="graphic" role="img" aria-label="Dummy chart for today's completed tasks"></div>
+          <p class="value" id="todayCompleted">--</p>
+          <div class="graphic" role="img" aria-label="chart for today's completed tasks"></div>
+          <div class="small">Tasks completed today</div>
         </article>
         <article class="card">
           <p class="label">Queue Backlog</p>
-          <p class="value">11</p>
-          <div class="graphic" role="img" aria-label="Dummy chart for queue backlog"></div>
+          <p class="value" id="queueBacklog">--</p>
+          <div class="graphic" role="img" aria-label="chart for queue backlog"></div>
+          <div class="small">Pending queued tasks</div>
         </article>
       </section>
 
-      <footer>Static single-page HTML. No build step required.</footer>
+      <footer>
+        Endpoint: <code id="endpointLabel"></code> · Refresh: <span id="refreshSeconds"></span>s
+      </footer>
     </main>
+
+    <script>
+      const METRICS_ENDPOINT = window.METRICS_ENDPOINT || './metrics.json';
+      const REFRESH_MS = Number(window.REFRESH_MS || 15000);
+
+      const fields = [
+        'totalTasksCompleted',
+        'activeAgents',
+        'tokensUsed',
+        'tokensLeft',
+        'todayCompleted',
+        'queueBacklog'
+      ];
+
+      document.getElementById('endpointLabel').textContent = METRICS_ENDPOINT;
+      document.getElementById('refreshSeconds').textContent = String(Math.floor(REFRESH_MS / 1000));
+
+      function fmt(value) {
+        if (typeof value === 'number') return value.toLocaleString();
+        return value ?? '--';
+      }
+
+      function setStatus(text, type = 'ok') {
+        const pill = document.getElementById('statusPill');
+        pill.textContent = text;
+        if (type === 'ok') {
+          pill.style.color = 'var(--accent)';
+          pill.style.borderColor = '#33457a';
+          pill.style.background = 'rgba(94,234,212,.15)';
+        } else if (type === 'warn') {
+          pill.style.color = 'var(--warn)';
+          pill.style.borderColor = 'rgba(251,191,36,.4)';
+          pill.style.background = 'rgba(251,191,36,.12)';
+        } else {
+          pill.style.color = 'var(--danger)';
+          pill.style.borderColor = 'rgba(248,113,113,.4)';
+          pill.style.background = 'rgba(248,113,113,.12)';
+        }
+      }
+
+      function applyMetrics(data) {
+        fields.forEach((key) => {
+          const el = document.getElementById(key);
+          if (el) el.textContent = fmt(data[key]);
+        });
+        const updated = data.updatedAt ? new Date(data.updatedAt) : new Date();
+        document.getElementById('lastUpdated').textContent = isNaN(updated) ? 'now' : updated.toLocaleString();
+      }
+
+      async function loadMetrics() {
+        try {
+          setStatus('Refreshing…', 'warn');
+          const response = await fetch(METRICS_ENDPOINT, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          applyMetrics(data);
+          setStatus('Live', 'ok');
+        } catch (err) {
+          console.error('Failed to load metrics:', err);
+          setStatus('API Error (showing last values)', 'error');
+          if (document.getElementById('lastUpdated').textContent === '--') {
+            applyMetrics({
+              totalTasksCompleted: 0,
+              activeAgents: 0,
+              tokensUsed: 0,
+              tokensLeft: 0,
+              todayCompleted: 0,
+              queueBacklog: 0,
+              updatedAt: new Date().toISOString()
+            });
+          }
+        }
+      }
+
+      loadMetrics();
+      setInterval(loadMetrics, REFRESH_MS);
+    </script>
   </body>
 </html>
