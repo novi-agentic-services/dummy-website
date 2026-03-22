@@ -45,13 +45,13 @@ def compute_metrics(status: dict) -> dict:
     today_per_agent = (today_completed / active_agents) if active_agents > 0 else 0.0
 
     active_tasks = []
-    for r in active_sessions[:12]:
-        key = r.get("key", "unknown-task")
-        task_id = key.split(":", 2)[-1]
+    for idx, r in enumerate(active_sessions[:12], start=1):
+        agent = r.get('agentId', 'agent')
+        kind = r.get('kind', 'task')
         active_tasks.append(
             {
-                "id": task_id,
-                "description": f"{r.get('agentId','agent')} handling {r.get('kind','task')} session",
+                "id": f"task-{idx}",
+                "description": f"{agent} handling {kind} session",
                 "tokensUsed": int(r.get("totalTokens") or 0),
                 "runtimeMinutes": round(((r.get("age") or 0) / 1000) / 60, 1),
             }
