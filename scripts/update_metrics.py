@@ -1,12 +1,30 @@
 #!/usr/bin/env python3
+import csv
 import datetime as dt
 import hashlib
 import json
 import subprocess
+import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 METRICS_PATH = ROOT / "metrics.json"
+HISTORY_PATH = ROOT / "MetricHistory.csv"
+
+HISTORY_COLUMNS = [
+    "UniqueId",
+    "DateTimeStamp",
+    "tokensUsed",
+    "tokensLeft",
+    "tokensUsedPct",
+    "activeAgents",
+    "activeAgentsCapacity",
+    "todayCompleted",
+    "todayCompletedPerAgent",
+    "openTaskCount",
+    "totalActiveTaskTokens",
+    "avgActiveTaskRuntimeMinutes",
+]
 
 
 def run_status_json() -> dict:
@@ -59,6 +77,11 @@ def compute_metrics(status: dict) -> dict:
             }
         )
 
+    total_active_task_tokens = int(sum(t["tokensUsed"] for t in active_tasks))
+    avg_active_task_runtime = round(
+        sum(t["runtimeMinutes"] for t in active_tasks) / len(active_tasks), 2
+    ) if active_tasks else 0.0
+
     return {
         "tokensUsed": tokens_used,
         "tokensLeft": tokens_left,
@@ -72,14 +95,43 @@ def compute_metrics(status: dict) -> dict:
         "tasksPerAgentTarget": 5,
         "activeTasks": active_tasks,
         "updatedAt": now.isoformat().replace("+00:00", "Z"),
+        "openTaskCount": len(active_tasks),
+        "totalActiveTaskTokens": total_active_task_tokens,
+        "avgActiveTaskRuntimeMinutes": avg_active_task_runtime,
     }
+
+
+def append_history(metrics: dict) -> None:
+    row = {
+        "UniqueId": f"RUN-{uuid.uuid4().hex[:12].upper()}",
+        "DateTimeStamp": metrics["updatedAt"],
+        "tokensUsed": metrics["tokensUsed"],
+        "tokensLeft": metrics["tokensLeft"],
+        "tokensUsedPct": metrics["tokensUsedPct"],
+        "activeAgents": metrics["activeAgents"],
+        "activeAgentsCapacity": metrics["activeAgentsCapacity"],
+        "todayCompleted": metrics["todayCompleted"],
+        "todayCompletedPerAgent": metrics["todayCompletedPerAgent"],
+        "openTaskCount": metrics["openTaskCount"],
+        "totalActiveTaskTokens": metrics["totalActiveTaskTokens"],
+        "avgActiveTaskRuntimeMinutes": metrics["avgActiveTaskRuntimeMinutes"],
+    }
+
+    file_exists = HISTORY_PATH.exists()
+    with HISTORY_PATH.open("a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=HISTORY_COLUMNS)
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(row)
 
 
 def main() -> None:
     status = run_status_json()
     metrics = compute_metrics(status)
     METRICS_PATH.write_text(json.dumps(metrics, indent=2) + "\n")
+    append_history(metrics)
     print(f"updated {METRICS_PATH}")
+    print(f"updated {HISTORY_PATH}")
 
 
 if __name__ == "__main__":
