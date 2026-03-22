@@ -1,0 +1,2 @@
+UniqueId,DateTimeStamp,tokensUsed,tokensLeft,tokensUsedPct,activeAgents,activeAgentsCapacity,todayCompleted,todayCompletedPerAgent,openTaskCount,totalActiveTaskTokens,avgActiveTaskRuntimeMinutes
+RUN-E437CA7182B3,2026-03-22T21:57:16.444132Z,229019,5482981,4.01,1,25,21,21.0,1,81708,1.3
