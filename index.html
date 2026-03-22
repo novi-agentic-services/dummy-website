@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dummy Agent Dashboard</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --surface: #121a2f;
+        --surface-2: #182340;
+        --border: #2a365e;
+        --text: #e9efff;
+        --muted: #9fb0e3;
+        --accent: #5eead4;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        color: var(--text);
+        background: radial-gradient(circle at 20% 0%, #16244a, var(--bg) 55%);
+      }
+      .container {
+        max-width: 1100px;
+        margin: 32px auto;
+        padding: 0 16px 32px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        letter-spacing: 0.02em;
+      }
+      .subtitle {
+        margin: 0 0 22px;
+        color: var(--muted);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .card {
+        background: linear-gradient(180deg, var(--surface), var(--surface-2));
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 10px 24px rgba(0,0,0,.35);
+      }
+      .label {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .value {
+        margin: 8px 0 14px;
+        font-size: 34px;
+        font-weight: 700;
+      }
+      .graphic {
+        height: 68px;
+        border-radius: 10px;
+        border: 1px solid #33457a;
+        background: linear-gradient(90deg, rgba(94,234,212,.28), rgba(96,165,250,.28));
+        position: relative;
+        overflow: hidden;
+      }
+      .graphic::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 8px,
+          rgba(255,255,255,.09) 8px,
+          rgba(255,255,255,.09) 16px
+        );
+      }
+      footer {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      @media (max-width: 880px) {
+        .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Dummy Agent Dashboard</h1>
+      <p class="subtitle">Cloudflare Pages compatible static site (6 metric blocks).</p>
+
+      <section class="grid" aria-label="Top row metrics">
+        <article class="card">
+          <p class="label">Total Tasks Completed</p>
+          <p class="value">128</p>
+          <div class="graphic" role="img" aria-label="Dummy chart for total tasks completed"></div>
+        </article>
+        <article class="card">
+          <p class="label">Active Agents</p>
+          <p class="value">4</p>
+          <div class="graphic" role="img" aria-label="Dummy chart for active agents"></div>
+        </article>
+        <article class="card">
+          <p class="label">Tokens Used</p>
+          <p class="value">72K</p>
+          <div class="graphic" role="img" aria-label="Dummy chart for tokens used"></div>
+        </article>
+      </section>
+
+      <section class="grid" aria-label="Bottom row metrics" style="margin-top:14px">
+        <article class="card">
+          <p class="label">Tokens Left</p>
+          <p class="value">428K</p>
+          <div class="graphic" role="img" aria-label="Dummy chart for tokens left"></div>
+        </article>
+        <article class="card">
+          <p class="label">Today Completed</p>
+          <p class="value">26</p>
+          <div class="graphic" role="img" aria-label="Dummy chart for today's completed tasks"></div>
+        </article>
+        <article class="card">
+          <p class="label">Queue Backlog</p>
+          <p class="value">11</p>
+          <div class="graphic" role="img" aria-label="Dummy chart for queue backlog"></div>
+        </article>
+      </section>
+
+      <footer>Static single-page HTML. No build step required.</footer>
+    </main>
+  </body>
+</html>
