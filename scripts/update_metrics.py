@@ -17,16 +17,21 @@ def compute_metrics(status: dict) -> dict:
     sessions = status.get("sessions", {}) or {}
     by_agent = sessions.get("byAgent", []) or []
 
-    # one representative recent session per agent
     recents = [a.get("recent", [])[0] for a in by_agent if a.get("recent")]
-
     now = dt.datetime.now(dt.timezone.utc)
     day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    active_agents = len({r.get("agentId") for r in recents if (r.get("age") or 10**9) < 300000})
-    total_tasks_completed = int(sessions.get("count", 0))
+    # Consider a session "active" if updated within last 15 minutes.
+    active_cutoff_ms = 15 * 60 * 1000
+    active_sessions = [r for r in recents if (r.get("age") or 10**9) <= active_cutoff_ms]
+
+    active_agents = len({r.get("agentId") for r in active_sessions if r.get("agentId")})
+    active_agents_capacity = 25
+
     tokens_used = int(sum((r.get("totalTokens") or 0) for r in recents))
     tokens_left = int(sum((r.get("remainingTokens") or 0) for r in recents))
+    token_budget = max(tokens_used + tokens_left, 1)
+    tokens_used_pct = (tokens_used / token_budget) * 100
 
     today_completed = 0
     for r in recents:
@@ -37,23 +42,39 @@ def compute_metrics(status: dict) -> dict:
         if updated >= day_start:
             today_completed += 1
 
-    queued_events = status.get("queuedSystemEvents")
-    queue_backlog = len(queued_events) if isinstance(queued_events, list) else int(queued_events or 0)
+    today_per_agent = (today_completed / active_agents) if active_agents > 0 else 0.0
 
-    token_budget = max(tokens_used + tokens_left, 1)
+    active_tasks = []
+    for r in active_sessions[:12]:
+        key = r.get("key", "unknown-task")
+        task_id = key.split(":", 2)[-1]
+        active_tasks.append(
+            {
+                "id": task_id,
+                "description": f"{r.get('agentId','agent')} handling {r.get('kind','task')} session",
+                "tokensUsed": int(r.get("totalTokens") or 0),
+                "runtimeMinutes": round(((r.get("age") or 0) / 1000) / 60, 1),
+            }
+        )
 
     return {
-        "totalTasksCompleted": total_tasks_completed,
-        "activeAgents": active_agents,
+        # Row 1: token info
         "tokensUsed": tokens_used,
         "tokensLeft": tokens_left,
-        "todayCompleted": today_completed,
-        "queueBacklog": queue_backlog,
-        "totalTasksTarget": 500,
-        "activeAgentsCapacity": 25,
         "tokenBudget": token_budget,
+        "tokensUsedPct": round(tokens_used_pct, 2),
+
+        # Row 2: agent info
+        "activeAgents": active_agents,
+        "activeAgentsCapacity": active_agents_capacity,
+        "todayCompleted": today_completed,
+        "todayCompletedPerAgent": round(today_per_agent, 2),
         "dailyTasksTarget": 100,
-        "queueCapacity": 50,
+        "tasksPerAgentTarget": 5,
+
+        # Row 3: detailed active tasks
+        "activeTasks": active_tasks,
+
         "updatedAt": now.isoformat().replace("+00:00", "Z"),
     }
 

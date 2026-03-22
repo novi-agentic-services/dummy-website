@@ -1,14 +1,27 @@
 {
-  "totalTasksCompleted": 22,
-  "activeAgents": 1,
-  "tokensUsed": 196807,
-  "tokensLeft": 5515193,
-  "todayCompleted": 21,
-  "queueBacklog": 0,
-  "totalTasksTarget": 500,
+  "tokensUsed": 216275,
+  "tokensLeft": 5495725,
+  "tokenBudget": 5712000,
+  "tokensUsedPct": 3.79,
+  "activeAgents": 2,
   "activeAgentsCapacity": 25,
-  "tokenBudget": 6000000,
+  "todayCompleted": 21,
+  "todayCompletedPerAgent": 10.5,
   "dailyTasksTarget": 100,
-  "queueCapacity": 50,
-  "updatedAt": "2026-03-22T21:28:05.700642Z"
+  "tasksPerAgentTarget": 5,
+  "activeTasks": [
+    {
+      "id": "main",
+      "description": "main handling direct session",
+      "tokensUsed": 11052,
+      "runtimeMinutes": 12.6
+    },
+    {
+      "id": "discord:channel:1479893514124005567",
+      "description": "orchestrator handling group session",
+      "tokensUsed": 68964,
+      "runtimeMinutes": 1.7
+    }
+  ],
+  "updatedAt": "2026-03-22T21:41:31.242257Z"
 }

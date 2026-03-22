@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dummy Agent Dashboard</title>
+    <title>Agent Mission Dashboard</title>
     <style>
       :root {
         --bg: #0b1020;
@@ -24,120 +24,42 @@
         color: var(--text);
         background: radial-gradient(circle at 20% 0%, #16244a, var(--bg) 55%);
       }
-      .container {
-        max-width: 1100px;
-        margin: 32px auto;
-        padding: 0 16px 32px;
-      }
-      .head {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        gap: 12px;
-        margin-bottom: 16px;
-      }
-      h1 {
-        margin: 0 0 8px;
-        font-size: 28px;
-        letter-spacing: 0.02em;
-      }
-      .subtitle {
-        margin: 0;
-        color: var(--muted);
-      }
-      .meta {
-        text-align: right;
-        color: var(--muted);
-        font-size: 12px;
-      }
+      .container { max-width: 1180px; margin: 28px auto; padding: 0 16px 28px; }
+      .head { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-bottom:16px; }
+      h1 { margin:0 0 8px; font-size:28px; }
+      .subtitle { margin:0; color:var(--muted); }
+      .meta { text-align:right; color:var(--muted); font-size:12px; }
       .status-pill {
-        display: inline-block;
-        margin-top: 6px;
-        padding: 4px 10px;
-        border-radius: 999px;
-        border: 1px solid #33457a;
-        background: rgba(94,234,212,.15);
-        color: var(--accent);
+        display:inline-block; margin-top:6px; padding:4px 10px; border-radius:999px;
+        border:1px solid #33457a; background:rgba(94,234,212,.15); color:var(--accent);
       }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 14px;
-      }
+
+      .row-title { margin: 18px 0 10px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+      .grid { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:14px; }
       .card {
         background: linear-gradient(180deg, var(--surface), var(--surface-2));
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 16px;
-        box-shadow: 0 10px 24px rgba(0,0,0,.35);
+        border:1px solid var(--border); border-radius:14px; padding:16px;
+        box-shadow:0 10px 24px rgba(0,0,0,.35);
+        min-height: 190px;
       }
-      .label {
-        margin: 0;
-        color: var(--muted);
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-      .value {
-        margin: 8px 0 14px;
-        font-size: 34px;
-        font-weight: 700;
-      }
-      .graphic {
-        height: 68px;
-        border-radius: 10px;
-        border: 1px solid #33457a;
-        background: linear-gradient(90deg, rgba(94,234,212,.28), rgba(96,165,250,.28));
-        position: relative;
-        overflow: hidden;
-      }
-      .graphic::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          -45deg,
-          transparent,
-          transparent 8px,
-          rgba(255,255,255,.09) 8px,
-          rgba(255,255,255,.09) 16px
-        );
-      }
-      .small {
-        margin-top: 6px;
-        font-size: 12px;
-        color: var(--muted);
-      }
-      .progress-track {
-        margin-top: 10px;
-        width: 100%;
-        height: 10px;
-        border-radius: 999px;
-        border: 1px solid #2f3e69;
-        background: rgba(255,255,255,0.06);
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0%;
-        background: linear-gradient(90deg, #22c55e, #16a34a);
-        box-shadow: 0 0 8px rgba(34,197,94,.55);
-        transition: width .45s ease;
-      }
-      .progress-label {
-        margin-top: 6px;
-        font-size: 11px;
-        color: #86efac;
-      }
-      footer {
-        margin-top: 18px;
-        color: var(--muted);
-        font-size: 12px;
-      }
-      @media (max-width: 880px) {
+      .label { margin:0; color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:.08em; }
+      .value { margin:8px 0 10px; font-size:34px; font-weight:700; }
+      .small { margin-top:6px; font-size:12px; color:var(--muted); }
+      .progress-track { margin-top:10px; width:100%; height:10px; border-radius:999px; border:1px solid #2f3e69; background:rgba(255,255,255,0.06); overflow:hidden; }
+      .progress-fill { height:100%; width:0%; background: linear-gradient(90deg,#22c55e,#16a34a); box-shadow:0 0 8px rgba(34,197,94,.55); transition: width .45s ease; }
+      .progress-label { margin-top:6px; font-size:11px; color:#86efac; }
+
+      .list { list-style:none; padding:0; margin:0; max-height:220px; overflow:auto; }
+      .list li { padding:10px; border:1px solid #30406b; border-radius:10px; margin-bottom:8px; background:rgba(255,255,255,.02); }
+      .task-title { font-size:13px; font-weight:600; }
+      .task-desc { font-size:12px; color:var(--muted); margin-top:4px; }
+      .mono { font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; }
+      footer { margin-top:16px; color:var(--muted); font-size:12px; }
+
+      @media (max-width: 980px) {
         .grid { grid-template-columns: 1fr; }
-        .head { flex-direction: column; align-items: flex-start; }
-        .meta { text-align: left; }
+        .head { flex-direction: column; align-items:flex-start; }
+        .meta { text-align:left; }
       }
     </style>
   </head>
@@ -145,8 +67,8 @@
     <main class="container">
       <div class="head">
         <div>
-          <h1>Dummy Agent Dashboard</h1>
-          <p class="subtitle">Live metrics with auto-refresh (Cloudflare Pages compatible).</p>
+          <h1>Agent Mission Dashboard</h1>
+          <p class="subtitle">Auto-refreshing operational metrics.</p>
         </div>
         <div class="meta">
           <div>Last update: <span id="lastUpdated">--</span></div>
@@ -154,168 +76,162 @@
         </div>
       </div>
 
-      <section class="grid" aria-label="Top row metrics">
+      <div class="row-title">Row 1 — Token Info</div>
+      <section class="grid">
         <article class="card">
-          <p class="label">Total Tasks Completed</p>
-          <p class="value" id="totalTasksCompleted">--</p>
-          <div class="graphic" role="img" aria-label="chart for total tasks completed"></div>
-          <div class="small">Cumulative completed work</div>
-          <div class="progress-track"><div class="progress-fill" id="bar-totalTasksCompleted"></div></div>
-          <div class="progress-label" id="barlabel-totalTasksCompleted">--%</div>
-        </article>
-        <article class="card">
-          <p class="label">Active Agents</p>
-          <p class="value" id="activeAgents">--</p>
-          <div class="graphic" role="img" aria-label="chart for active agents"></div>
-          <div class="small">Agents currently executing tasks</div>
-          <div class="progress-track"><div class="progress-fill" id="bar-activeAgents"></div></div>
-          <div class="progress-label" id="barlabel-activeAgents">--%</div>
-        </article>
-        <article class="card">
-          <p class="label">Tokens Used</p>
+          <p class="label">Total Tokens Used</p>
           <p class="value" id="tokensUsed">--</p>
-          <div class="graphic" role="img" aria-label="chart for tokens used"></div>
-          <div class="small">Current period usage</div>
           <div class="progress-track"><div class="progress-fill" id="bar-tokensUsed"></div></div>
-          <div class="progress-label" id="barlabel-tokensUsed">--%</div>
+          <div class="progress-label" id="barlabel-tokensUsed">--</div>
         </article>
-      </section>
-
-      <section class="grid" aria-label="Bottom row metrics" style="margin-top:14px">
         <article class="card">
           <p class="label">Tokens Left</p>
           <p class="value" id="tokensLeft">--</p>
-          <div class="graphic" role="img" aria-label="chart for tokens left"></div>
-          <div class="small">Remaining budget/capacity</div>
           <div class="progress-track"><div class="progress-fill" id="bar-tokensLeft"></div></div>
-          <div class="progress-label" id="barlabel-tokensLeft">--%</div>
+          <div class="progress-label" id="barlabel-tokensLeft">--</div>
         </article>
         <article class="card">
-          <p class="label">Today Completed</p>
-          <p class="value" id="todayCompleted">--</p>
-          <div class="graphic" role="img" aria-label="chart for today's completed tasks"></div>
-          <div class="small">Tasks completed today</div>
-          <div class="progress-track"><div class="progress-fill" id="bar-todayCompleted"></div></div>
-          <div class="progress-label" id="barlabel-todayCompleted">--%</div>
-        </article>
-        <article class="card">
-          <p class="label">Queue Backlog</p>
-          <p class="value" id="queueBacklog">--</p>
-          <div class="graphic" role="img" aria-label="chart for queue backlog"></div>
-          <div class="small">Pending queued tasks</div>
-          <div class="progress-track"><div class="progress-fill" id="bar-queueBacklog"></div></div>
-          <div class="progress-label" id="barlabel-queueBacklog">--%</div>
+          <p class="label">% Total Tokens Used</p>
+          <p class="value" id="tokensUsedPct">--</p>
+          <div class="progress-track"><div class="progress-fill" id="bar-tokensUsedPct"></div></div>
+          <div class="progress-label" id="barlabel-tokensUsedPct">--</div>
         </article>
       </section>
 
-      <footer>
-        Endpoint: <code id="endpointLabel"></code> · Refresh: <span id="refreshSeconds"></span>s
-      </footer>
+      <div class="row-title">Row 2 — Agent Info</div>
+      <section class="grid">
+        <article class="card">
+          <p class="label">Active Agents</p>
+          <p class="value" id="activeAgents">--</p>
+          <div class="small" id="activeAgentsDetail">--</div>
+          <div class="progress-track"><div class="progress-fill" id="bar-activeAgents"></div></div>
+          <div class="progress-label" id="barlabel-activeAgents">--</div>
+        </article>
+        <article class="card">
+          <p class="label">Tasks Completed Today</p>
+          <p class="value" id="todayCompleted">--</p>
+          <div class="small">Across all agents</div>
+          <div class="progress-track"><div class="progress-fill" id="bar-todayCompleted"></div></div>
+          <div class="progress-label" id="barlabel-todayCompleted">--</div>
+        </article>
+        <article class="card">
+          <p class="label">Tasks/Day per Active Agent</p>
+          <p class="value" id="todayCompletedPerAgent">--</p>
+          <div class="small">todayCompleted ÷ activeAgents</div>
+          <div class="progress-track"><div class="progress-fill" id="bar-todayCompletedPerAgent"></div></div>
+          <div class="progress-label" id="barlabel-todayCompletedPerAgent">--</div>
+        </article>
+      </section>
+
+      <div class="row-title">Row 3 — Detailed Active Tasks</div>
+      <section class="grid">
+        <article class="card">
+          <p class="label">Open Tasks + Description</p>
+          <ul class="list" id="taskList"></ul>
+        </article>
+        <article class="card">
+          <p class="label">Tokens Used Per Active Task</p>
+          <ul class="list" id="taskTokensList"></ul>
+        </article>
+        <article class="card">
+          <p class="label">Runtime Per Active Task</p>
+          <ul class="list" id="taskRuntimeList"></ul>
+        </article>
+      </section>
+
+      <footer>Endpoint: <code id="endpointLabel"></code> · Refresh: <span id="refreshSeconds"></span>s</footer>
     </main>
 
     <script>
-      const METRICS_ENDPOINT = window.METRICS_ENDPOINT || './metrics.json';
-      const REFRESH_MS = Number(window.REFRESH_MS || 15000);
-
-      const fields = [
-        'totalTasksCompleted',
-        'activeAgents',
-        'tokensUsed',
-        'tokensLeft',
-        'todayCompleted',
-        'queueBacklog'
-      ];
+      const METRICS_ENDPOINT = './metrics.json';
+      const REFRESH_MS = 15000;
 
       document.getElementById('endpointLabel').textContent = METRICS_ENDPOINT;
-      document.getElementById('refreshSeconds').textContent = String(Math.floor(REFRESH_MS / 1000));
+      document.getElementById('refreshSeconds').textContent = String(Math.floor(REFRESH_MS/1000));
 
-      function fmt(value) {
-        if (typeof value === 'number') return value.toLocaleString();
-        return value ?? '--';
-      }
+      function fmt(v){ return (typeof v === 'number') ? v.toLocaleString() : (v ?? '--'); }
 
-      function setStatus(text, type = 'ok') {
+      function setStatus(text, type='ok') {
         const pill = document.getElementById('statusPill');
         pill.textContent = text;
-        if (type === 'ok') {
-          pill.style.color = 'var(--accent)';
-          pill.style.borderColor = '#33457a';
-          pill.style.background = 'rgba(94,234,212,.15)';
-        } else if (type === 'warn') {
-          pill.style.color = 'var(--warn)';
-          pill.style.borderColor = 'rgba(251,191,36,.4)';
-          pill.style.background = 'rgba(251,191,36,.12)';
-        } else {
-          pill.style.color = 'var(--danger)';
-          pill.style.borderColor = 'rgba(248,113,113,.4)';
-          pill.style.background = 'rgba(248,113,113,.12)';
-        }
+        if(type==='ok'){ pill.style.color='var(--accent)'; pill.style.background='rgba(94,234,212,.15)'; }
+        else if(type==='warn'){ pill.style.color='var(--warn)'; pill.style.background='rgba(251,191,36,.12)'; }
+        else { pill.style.color='var(--danger)'; pill.style.background='rgba(248,113,113,.12)'; }
       }
 
-      function setBar(key, current, total) {
-        const fill = document.getElementById(`bar-${key}`);
-        const label = document.getElementById(`barlabel-${key}`);
-        if (!fill || !label) return;
-
-        const safeTotal = Number(total) > 0 ? Number(total) : 0;
-        const safeCurrent = Number(current) || 0;
-        let pct = safeTotal > 0 ? (safeCurrent / safeTotal) * 100 : 0;
-        if (!Number.isFinite(pct)) pct = 0;
-        pct = Math.max(0, Math.min(100, pct));
-
+      function setBar(id, current, total, suffix='of total') {
+        const fill = document.getElementById(`bar-${id}`);
+        const label = document.getElementById(`barlabel-${id}`);
+        if(!fill || !label) return;
+        const c = Number(current) || 0;
+        const t = Number(total) > 0 ? Number(total) : 1;
+        const pct = Math.max(0, Math.min(100, (c/t)*100));
         fill.style.width = `${pct.toFixed(1)}%`;
-        label.textContent = `${pct.toFixed(1)}% of total`;
+        label.textContent = `${pct.toFixed(1)}% ${suffix}`;
       }
 
-      function applyMetrics(data) {
-        fields.forEach((key) => {
-          const el = document.getElementById(key);
-          if (el) el.textContent = fmt(data[key]);
-        });
+      function setSimpleList(containerId, items, mapFn) {
+        const el = document.getElementById(containerId);
+        if(!el) return;
+        if(!items || items.length === 0){
+          el.innerHTML = '<li><div class="task-desc">No active tasks.</div></li>';
+          return;
+        }
+        el.innerHTML = items.map(mapFn).join('');
+      }
 
-        // Totals can come from payload; these are sensible defaults.
-        const totals = {
-          totalTasksCompleted: Number(data.totalTasksTarget ?? 500),
-          activeAgents: Number(data.activeAgentsCapacity ?? 25),
-          tokensUsed: Number(data.tokenBudget ?? ((Number(data.tokensUsed) || 0) + (Number(data.tokensLeft) || 0) || 1)),
-          tokensLeft: Number(data.tokenBudget ?? ((Number(data.tokensUsed) || 0) + (Number(data.tokensLeft) || 0) || 1)),
-          todayCompleted: Number(data.dailyTasksTarget ?? 100),
-          queueBacklog: Number(data.queueCapacity ?? 50)
-        };
+      function applyMetrics(m) {
+        document.getElementById('tokensUsed').textContent = fmt(m.tokensUsed);
+        document.getElementById('tokensLeft').textContent = fmt(m.tokensLeft);
+        document.getElementById('tokensUsedPct').textContent = `${Number(m.tokensUsedPct || 0).toFixed(1)}%`;
 
-        setBar('totalTasksCompleted', data.totalTasksCompleted, totals.totalTasksCompleted);
-        setBar('activeAgents', data.activeAgents, totals.activeAgents);
-        setBar('tokensUsed', data.tokensUsed, totals.tokensUsed);
-        setBar('tokensLeft', data.tokensLeft, totals.tokensLeft);
-        setBar('todayCompleted', data.todayCompleted, totals.todayCompleted);
-        setBar('queueBacklog', data.queueBacklog, totals.queueBacklog);
+        document.getElementById('activeAgents').textContent = fmt(m.activeAgents);
+        document.getElementById('activeAgentsDetail').textContent = `${fmt(m.activeAgents)} / ${fmt(m.activeAgentsCapacity)} possible active agents`;
+        document.getElementById('todayCompleted').textContent = fmt(m.todayCompleted);
+        document.getElementById('todayCompletedPerAgent').textContent = Number(m.todayCompletedPerAgent || 0).toFixed(2);
 
-        const updated = data.updatedAt ? new Date(data.updatedAt) : new Date();
+        setBar('tokensUsed', m.tokensUsed, m.tokenBudget);
+        setBar('tokensLeft', m.tokensLeft, m.tokenBudget);
+        setBar('tokensUsedPct', m.tokensUsedPct, 100, 'used');
+        setBar('activeAgents', m.activeAgents, m.activeAgentsCapacity);
+        setBar('todayCompleted', m.todayCompleted, m.dailyTasksTarget);
+        setBar('todayCompletedPerAgent', m.todayCompletedPerAgent, m.tasksPerAgentTarget || 5);
+
+        const tasks = Array.isArray(m.activeTasks) ? m.activeTasks : [];
+        setSimpleList('taskList', tasks, (t) => `
+          <li>
+            <div class="task-title mono">${t.id || 'unknown-task'}</div>
+            <div class="task-desc">${t.description || 'No description available.'}</div>
+          </li>
+        `);
+        setSimpleList('taskTokensList', tasks, (t) => `
+          <li>
+            <div class="task-title mono">${t.id || 'unknown-task'}</div>
+            <div class="task-desc">${fmt(t.tokensUsed || 0)} tokens</div>
+          </li>
+        `);
+        setSimpleList('taskRuntimeList', tasks, (t) => `
+          <li>
+            <div class="task-title mono">${t.id || 'unknown-task'}</div>
+            <div class="task-desc">${fmt(t.runtimeMinutes || 0)} min</div>
+          </li>
+        `);
+
+        const updated = m.updatedAt ? new Date(m.updatedAt) : new Date();
         document.getElementById('lastUpdated').textContent = isNaN(updated) ? 'now' : updated.toLocaleString();
       }
 
-      async function loadMetrics() {
+      async function loadMetrics(){
         try {
-          setStatus('Refreshing…', 'warn');
-          const response = await fetch(METRICS_ENDPOINT, { cache: 'no-store' });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = await response.json();
+          setStatus('Refreshing…','warn');
+          const r = await fetch(METRICS_ENDPOINT, { cache: 'no-store' });
+          if(!r.ok) throw new Error(`HTTP ${r.status}`);
+          const data = await r.json();
           applyMetrics(data);
-          setStatus('Live', 'ok');
-        } catch (err) {
-          console.error('Failed to load metrics:', err);
-          setStatus('API Error (showing last values)', 'error');
-          if (document.getElementById('lastUpdated').textContent === '--') {
-            applyMetrics({
-              totalTasksCompleted: 0,
-              activeAgents: 0,
-              tokensUsed: 0,
-              tokensLeft: 0,
-              todayCompleted: 0,
-              queueBacklog: 0,
-              updatedAt: new Date().toISOString()
-            });
-          }
+          setStatus('Live','ok');
+        } catch (e) {
+          console.error(e);
+          setStatus('API Error','error');
         }
       }
 
