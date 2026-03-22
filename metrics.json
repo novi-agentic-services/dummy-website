@@ -1,8 +1,8 @@
 {
-  "tokensUsed": 222441,
-  "tokensLeft": 5489559,
+  "tokensUsed": 224718,
+  "tokensLeft": 5487282,
   "tokenBudget": 5712000,
-  "tokensUsedPct": 3.89,
+  "tokensUsedPct": 3.93,
   "activeAgents": 1,
   "activeAgentsCapacity": 25,
   "todayCompleted": 21,
@@ -11,11 +11,11 @@
   "tasksPerAgentTarget": 5,
   "activeTasks": [
     {
-      "id": "task-1",
+      "id": "TASK-9015AF3E",
       "description": "orchestrator handling group session",
-      "tokensUsed": 75130,
-      "runtimeMinutes": 0.6
+      "tokensUsed": 77407,
+      "runtimeMinutes": 0.9
     }
   ],
-  "updatedAt": "2026-03-22T21:48:44.002394Z"
+  "updatedAt": "2026-03-22T21:52:06.031226Z"
 }

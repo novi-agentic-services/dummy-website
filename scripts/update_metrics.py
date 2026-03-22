@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import datetime as dt
+import hashlib
 import json
 import subprocess
 from pathlib import Path
@@ -21,7 +22,6 @@ def compute_metrics(status: dict) -> dict:
     now = dt.datetime.now(dt.timezone.utc)
     day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    # Consider a session "active" if updated within last 15 minutes.
     active_cutoff_ms = 15 * 60 * 1000
     active_sessions = [r for r in recents if (r.get("age") or 10**9) <= active_cutoff_ms]
 
@@ -45,12 +45,14 @@ def compute_metrics(status: dict) -> dict:
     today_per_agent = (today_completed / active_agents) if active_agents > 0 else 0.0
 
     active_tasks = []
-    for idx, r in enumerate(active_sessions[:12], start=1):
-        agent = r.get('agentId', 'agent')
-        kind = r.get('kind', 'task')
+    for r in active_sessions[:12]:
+        agent = r.get("agentId", "agent")
+        kind = r.get("kind", "task")
+        basis = f"{agent}|{kind}|{r.get('updatedAt', 0)}|{r.get('sessionId', '')}"
+        short = hashlib.sha1(basis.encode()).hexdigest()[:8].upper()
         active_tasks.append(
             {
-                "id": f"task-{idx}",
+                "id": f"TASK-{short}",
                 "description": f"{agent} handling {kind} session",
                 "tokensUsed": int(r.get("totalTokens") or 0),
                 "runtimeMinutes": round(((r.get("age") or 0) / 1000) / 60, 1),
@@ -58,23 +60,17 @@ def compute_metrics(status: dict) -> dict:
         )
 
     return {
-        # Row 1: token info
         "tokensUsed": tokens_used,
         "tokensLeft": tokens_left,
         "tokenBudget": token_budget,
         "tokensUsedPct": round(tokens_used_pct, 2),
-
-        # Row 2: agent info
         "activeAgents": active_agents,
         "activeAgentsCapacity": active_agents_capacity,
         "todayCompleted": today_completed,
         "todayCompletedPerAgent": round(today_per_agent, 2),
         "dailyTasksTarget": 100,
         "tasksPerAgentTarget": 5,
-
-        # Row 3: detailed active tasks
         "activeTasks": active_tasks,
-
         "updatedAt": now.isoformat().replace("+00:00", "Z"),
     }
 
