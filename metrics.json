@@ -1,9 +1,9 @@
 {
-  "totalTasksCompleted": 152,
-  "activeAgents": 100,
-  "tokensUsed": 84200,
-  "tokensLeft": 415800,
-  "todayCompleted": 31,
-  "queueBacklog": 9,
-  "updatedAt": "2026-03-22T21:15:00Z"
+  "totalTasksCompleted": 22,
+  "activeAgents": 1,
+  "tokensUsed": 196807,
+  "tokensLeft": 5515193,
+  "todayCompleted": 21,
+  "queueBacklog": 0,
+  "updatedAt": "2026-03-22T21:28:05.700642Z"
 }
