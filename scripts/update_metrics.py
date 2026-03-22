@@ -40,6 +40,8 @@ def compute_metrics(status: dict) -> dict:
     queued_events = status.get("queuedSystemEvents")
     queue_backlog = len(queued_events) if isinstance(queued_events, list) else int(queued_events or 0)
 
+    token_budget = max(tokens_used + tokens_left, 1)
+
     return {
         "totalTasksCompleted": total_tasks_completed,
         "activeAgents": active_agents,
@@ -47,6 +49,11 @@ def compute_metrics(status: dict) -> dict:
         "tokensLeft": tokens_left,
         "todayCompleted": today_completed,
         "queueBacklog": queue_backlog,
+        "totalTasksTarget": 500,
+        "activeAgentsCapacity": 25,
+        "tokenBudget": token_budget,
+        "dailyTasksTarget": 100,
+        "queueCapacity": 50,
         "updatedAt": now.isoformat().replace("+00:00", "Z"),
     }
 

@@ -108,6 +108,27 @@
         font-size: 12px;
         color: var(--muted);
       }
+      .progress-track {
+        margin-top: 10px;
+        width: 100%;
+        height: 10px;
+        border-radius: 999px;
+        border: 1px solid #2f3e69;
+        background: rgba(255,255,255,0.06);
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #22c55e, #16a34a);
+        box-shadow: 0 0 8px rgba(34,197,94,.55);
+        transition: width .45s ease;
+      }
+      .progress-label {
+        margin-top: 6px;
+        font-size: 11px;
+        color: #86efac;
+      }
       footer {
         margin-top: 18px;
         color: var(--muted);
@@ -139,18 +160,24 @@
           <p class="value" id="totalTasksCompleted">--</p>
           <div class="graphic" role="img" aria-label="chart for total tasks completed"></div>
           <div class="small">Cumulative completed work</div>
+          <div class="progress-track"><div class="progress-fill" id="bar-totalTasksCompleted"></div></div>
+          <div class="progress-label" id="barlabel-totalTasksCompleted">--%</div>
         </article>
         <article class="card">
           <p class="label">Active Agents</p>
           <p class="value" id="activeAgents">--</p>
           <div class="graphic" role="img" aria-label="chart for active agents"></div>
           <div class="small">Agents currently executing tasks</div>
+          <div class="progress-track"><div class="progress-fill" id="bar-activeAgents"></div></div>
+          <div class="progress-label" id="barlabel-activeAgents">--%</div>
         </article>
         <article class="card">
           <p class="label">Tokens Used</p>
           <p class="value" id="tokensUsed">--</p>
           <div class="graphic" role="img" aria-label="chart for tokens used"></div>
           <div class="small">Current period usage</div>
+          <div class="progress-track"><div class="progress-fill" id="bar-tokensUsed"></div></div>
+          <div class="progress-label" id="barlabel-tokensUsed">--%</div>
         </article>
       </section>
 
@@ -160,18 +187,24 @@
           <p class="value" id="tokensLeft">--</p>
           <div class="graphic" role="img" aria-label="chart for tokens left"></div>
           <div class="small">Remaining budget/capacity</div>
+          <div class="progress-track"><div class="progress-fill" id="bar-tokensLeft"></div></div>
+          <div class="progress-label" id="barlabel-tokensLeft">--%</div>
         </article>
         <article class="card">
           <p class="label">Today Completed</p>
           <p class="value" id="todayCompleted">--</p>
           <div class="graphic" role="img" aria-label="chart for today's completed tasks"></div>
           <div class="small">Tasks completed today</div>
+          <div class="progress-track"><div class="progress-fill" id="bar-todayCompleted"></div></div>
+          <div class="progress-label" id="barlabel-todayCompleted">--%</div>
         </article>
         <article class="card">
           <p class="label">Queue Backlog</p>
           <p class="value" id="queueBacklog">--</p>
           <div class="graphic" role="img" aria-label="chart for queue backlog"></div>
           <div class="small">Pending queued tasks</div>
+          <div class="progress-track"><div class="progress-fill" id="bar-queueBacklog"></div></div>
+          <div class="progress-label" id="barlabel-queueBacklog">--%</div>
         </article>
       </section>
 
@@ -219,11 +252,44 @@
         }
       }
 
+      function setBar(key, current, total) {
+        const fill = document.getElementById(`bar-${key}`);
+        const label = document.getElementById(`barlabel-${key}`);
+        if (!fill || !label) return;
+
+        const safeTotal = Number(total) > 0 ? Number(total) : 0;
+        const safeCurrent = Number(current) || 0;
+        let pct = safeTotal > 0 ? (safeCurrent / safeTotal) * 100 : 0;
+        if (!Number.isFinite(pct)) pct = 0;
+        pct = Math.max(0, Math.min(100, pct));
+
+        fill.style.width = `${pct.toFixed(1)}%`;
+        label.textContent = `${pct.toFixed(1)}% of total`;
+      }
+
       function applyMetrics(data) {
         fields.forEach((key) => {
           const el = document.getElementById(key);
           if (el) el.textContent = fmt(data[key]);
         });
+
+        // Totals can come from payload; these are sensible defaults.
+        const totals = {
+          totalTasksCompleted: Number(data.totalTasksTarget ?? 500),
+          activeAgents: Number(data.activeAgentsCapacity ?? 25),
+          tokensUsed: Number(data.tokenBudget ?? ((Number(data.tokensUsed) || 0) + (Number(data.tokensLeft) || 0) || 1)),
+          tokensLeft: Number(data.tokenBudget ?? ((Number(data.tokensUsed) || 0) + (Number(data.tokensLeft) || 0) || 1)),
+          todayCompleted: Number(data.dailyTasksTarget ?? 100),
+          queueBacklog: Number(data.queueCapacity ?? 50)
+        };
+
+        setBar('totalTasksCompleted', data.totalTasksCompleted, totals.totalTasksCompleted);
+        setBar('activeAgents', data.activeAgents, totals.activeAgents);
+        setBar('tokensUsed', data.tokensUsed, totals.tokensUsed);
+        setBar('tokensLeft', data.tokensLeft, totals.tokensLeft);
+        setBar('todayCompleted', data.todayCompleted, totals.todayCompleted);
+        setBar('queueBacklog', data.queueBacklog, totals.queueBacklog);
+
         const updated = data.updatedAt ? new Date(data.updatedAt) : new Date();
         document.getElementById('lastUpdated').textContent = isNaN(updated) ? 'now' : updated.toLocaleString();
       }

@@ -5,5 +5,10 @@
   "tokensLeft": 5515193,
   "todayCompleted": 21,
   "queueBacklog": 0,
+  "totalTasksTarget": 500,
+  "activeAgentsCapacity": 25,
+  "tokenBudget": 6000000,
+  "dailyTasksTarget": 100,
+  "queueCapacity": 50,
   "updatedAt": "2026-03-22T21:28:05.700642Z"
 }
